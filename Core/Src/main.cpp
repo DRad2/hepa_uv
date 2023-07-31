@@ -49,6 +49,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+
 ADC_HandleTypeDef hadc1;
 ADC_HandleTypeDef hadc2;
 
@@ -92,6 +93,8 @@ void HEPALEDTest(void);
 
 #define TIMCLOCK   64000000
 #define PRESCALAR  64
+
+void send_msg(uint32_t* msg, int len);
 
 uint32_t IC_Val1 = 0;
 uint32_t IC_Val2 = 0;
@@ -337,7 +340,12 @@ int main(void)
 //	  	HAL_Delay(100);
 
 	  /* CAN FD Test */
-	  	 // test_can_bus();
+	  //test_can_bus();
+	  uint8_t msg[4] = { 0x1, 0x2, 0x3, 0x4 };
+	  //send_msg(msg, 4);
+	  can_listen();
+
+
 
 	  if (HAL_GPIO_ReadPin(DOOR_OPEN_MCU_GPIO_Port, DOOR_OPEN_MCU_Pin))
 	  {
@@ -583,9 +591,9 @@ static void MX_FDCAN1_Init(void)
   /* USER CODE BEGIN FDCAN1_Init 0 */
 	//Change TxHeader.Identifier, RxHeader.Identifier
 	/* AUX1 ID */
-	//TxHeader.Identifier = 0xFFFF; //0x555;
+	TxHeader.Identifier = 0x23; //0x555;
 	/* AUX2 ID */
-	TxHeader.Identifier = 0xFAAA;
+	//TxHeader.Identifier = 0xFAAA;
 	TxHeader.IdType = FDCAN_EXTENDED_ID;
 	TxHeader.TxFrameType = FDCAN_DATA_FRAME;
 	TxHeader.DataLength = FDCAN_DLC_BYTES_8;
@@ -596,9 +604,9 @@ static void MX_FDCAN1_Init(void)
 	TxHeader.MessageMarker = 0;
 
 	/* AUX1 ID */
-	//RxHeader.Identifier = 0xFFFF; //0x555;
+	RxHeader.Identifier = 0x23; //0x555;
 	/* AUX2 ID */
-	RxHeader.Identifier = 0xFAAA; //0x555;
+	//RxHeader.Identifier = 0xFAAA; //0x555;
 	RxHeader.IdType = FDCAN_EXTENDED_ID;
 	RxHeader.RxFrameType = FDCAN_DATA_FRAME;
 	RxHeader.DataLength = FDCAN_DLC_BYTES_8;
@@ -638,26 +646,26 @@ static void MX_FDCAN1_Init(void)
   FDCAN_FilterTypeDef sFilterConfig;
 
   /* FD CAN Filter Config */
-    sFilterConfig.IdType = FDCAN_EXTENDED_ID;
+    /*sFilterConfig.IdType = FDCAN_EXTENDED_ID;
     sFilterConfig.FilterIndex = 0;
     sFilterConfig.FilterType = FDCAN_FILTER_DUAL;
     //sFilterConfig.FilterConfig = FDCAN_FILTER_REJECT;
     sFilterConfig.FilterConfig = FDCAN_FILTER_TO_RXFIFO0;
 
-    /* Use for AUX1 - Reject AUX2 */
+     Use for AUX1 - Reject AUX2
     //sFilterConfig.FilterID1 = 0xFAAA;
     //sFilterConfig.FilterID2 = 0xFAAA;
 
-    /* Use for AUX2 - Reject AUX1 */
+     Use for AUX2 - Reject AUX1
     sFilterConfig.FilterID1 = 0x00;
 	sFilterConfig.FilterID2 = 0x00;
 
     if (HAL_FDCAN_ConfigFilter(&hfdcan1, &sFilterConfig) != HAL_OK)
     {
-  	  /* Filter configuration Error */
+  	   Filter configuration Error
   	  Error_Handler();
     }
-
+*/
 /* Configure global filter to reject all non-matching frames */
     //HAL_FDCAN_ConfigGlobalFilter(&hfdcan1, FDCAN_REJECT, FDCAN_REJECT, FDCAN_REJECT_REMOTE, FDCAN_REJECT_REMOTE);
 

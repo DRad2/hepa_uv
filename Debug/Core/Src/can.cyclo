@@ -1,0 +1,3 @@
+../Core/Src/can.c:21:6:test_can_bus	4
+../Core/Src/can.c:54:6:send_msg	3
+../Core/Src/can.c:68:6:can_listen	2

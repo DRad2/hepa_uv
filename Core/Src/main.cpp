@@ -64,7 +64,6 @@ SPI_HandleTypeDef hspi2;
 
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
-
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -94,7 +93,6 @@ void HEPALEDTest(void);
 #define TIMCLOCK   64000000
 #define PRESCALAR  64
 
-void send_msg(uint32_t* msg, int len);
 
 uint32_t IC_Val1 = 0;
 uint32_t IC_Val2 = 0;
@@ -341,9 +339,9 @@ int main(void)
 
 	  /* CAN FD Test */
 	  //test_can_bus();
-	  uint8_t msg[4] = { 0x1, 0x2, 0x3, 0x4 };
+	  //uint8_t msg[4] = { 0x1, 0x2, 0x3, 0x4 };
 	  //send_msg(msg, 4);
-	  can_listen();
+	  //can_listen();
 
 
 
@@ -1062,6 +1060,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
+
 
 /**
   * @brief  This function is executed in case of error occurrence.

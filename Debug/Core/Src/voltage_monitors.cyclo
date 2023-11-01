@@ -1,0 +1,2 @@
+../Core/Src/voltage_monitors.c:15:6:get_vin	1
+../Core/Src/voltage_monitors.c:38:6:get_3V3	1

@@ -1,6 +1,6 @@
 ################################################################################
 # Automatically-generated file. Do not edit!
-# Toolchain: GNU Tools for STM32 (10.3-2021.10)
+# Toolchain: GNU Tools for STM32 (11.3.rel1)
 ################################################################################
 
 -include ../makefile.init
@@ -67,6 +67,12 @@ default.size.stdout \
 OBJDUMP_LIST += \
 HEPA_UV.list \
 
+OBJCOPY_HEX += \
+HEPA_UV.hex \
+
+OBJCOPY_BIN += \
+HEPA_UV.bin \
+
 
 # All Target
 all: main-build
@@ -90,12 +96,22 @@ HEPA_UV.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
+HEPA_UV.hex: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O ihex $(EXECUTABLES) "HEPA_UV.hex"
+	@echo 'Finished building: $@'
+	@echo ' '
+
+HEPA_UV.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "HEPA_UV.bin"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) HEPA_UV.elf HEPA_UV.list HEPA_UV.map default.size.stdout
+	-$(RM) HEPA_UV.bin HEPA_UV.elf HEPA_UV.hex HEPA_UV.list HEPA_UV.map default.size.stdout
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX) $(OBJCOPY_BIN)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'

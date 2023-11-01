@@ -11,6 +11,8 @@ extern "C" {
 extern void Error_Handler(void);
 void test_can_bus();
 void can_listen();
+void send_msg(uint8_t* msg, int len);
+
 
 #ifdef __cplusplus
 }

@@ -32,7 +32,7 @@ if (HAL_FDCAN_GetRxFifoFillLevel(&hfdcan1, FDCAN_RX_FIFO0))
 	for (int i = 0; i<8; i++)
 	{
 		/* AUX 1 increase by 1 */
-		TxData[i]= RxData[i];
+		TxData[i]= RxData[i]+1;
 		/* AUX 2 increase by 2 */
 		//TxData[i]= RxData[i] + 2;
 	}

@@ -8,6 +8,9 @@ extern FDCAN_TxHeaderTypeDef TxHeader;
 extern uint8_t debug_str[32];
 extern uint8_t RxData[8];
 extern uint8_t TxData[8];
+extern uint8_t EEPROM_CAN_Msg;
+uint8_t counter;
+
 uint8_t NL[] = "-----------------------------------\r\n";
 
 
@@ -29,9 +32,14 @@ if (HAL_FDCAN_GetRxFifoFillLevel(&hfdcan1, FDCAN_RX_FIFO0))
 	sprintf((char*) debug_str, "%02x %02x %02x %02x %02x %02x %02x %02x\r\n", RxData[0], RxData[1], RxData[2], RxData[3], RxData[4], RxData[5], RxData[6], RxData[7]);
 
 	/* Prepare received data to be sent back */
+	counter = 0;
 	for (int i = 0; i<8; i++)
 	{
 		/* AUX 1 increase by 1 */
+		if (RxData[i] == 0)
+		{
+			counter++;
+		}
 		TxData[i]= RxData[i]+1;
 		/* AUX 2 increase by 2 */
 		//TxData[i]= RxData[i] + 2;
@@ -48,6 +56,13 @@ if (HAL_FDCAN_GetRxFifoFillLevel(&hfdcan1, FDCAN_RX_FIFO0))
 					  TxData[1], TxData[2], TxData[3], TxData[4], TxData[5], TxData[6], TxData[7]);
 		HAL_UART_Transmit(&hlpuart1, (uint8_t*)debug_str, strlen((const char*)debug_str), HAL_MAX_DELAY);
 		HAL_UART_Transmit(&hlpuart1, NL, sizeof(NL), HAL_MAX_DELAY);
+
+		if (counter == 8)
+		{
+			EEPROM_CAN_Msg = 1;
+		}
+		else EEPROM_CAN_Msg = 0;
+		counter = 0;
 	}
 }
 
@@ -77,4 +92,3 @@ void can_listen()
 		HAL_UART_Transmit(&hlpuart1, NL, sizeof(NL), HAL_MAX_DELAY);
 	}
 }
-

@@ -75,14 +75,15 @@ HEPA_UV.bin \
 
 
 # All Target
-all: main-build
+all:
+	+@$(MAKE) --no-print-directory main-build && $(MAKE) --no-print-directory post-build
 
 # Main-build Target
 main-build: HEPA_UV.elf secondary-outputs
 
 # Tool invocations
 HEPA_UV.elf HEPA_UV.map: $(OBJS) $(USER_OBJS) G:\Shared\ drives\Opentrons\Hardware\1\ -\ Hardware\ Engineering\1\ -\ NPI\ Programs\12\ -\ OT3\3\ -\ Electrical\15\ -\ HEPA_UV\Test\ Code\DC\ Ballast\STM32G491RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "HEPA_UV.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"G:\Shared drives\Opentrons\Hardware\1 - Hardware Engineering\1 - NPI Programs\12 - OT3\3 - Electrical\15 - HEPA_UV\Test Code\DC Ballast\STM32G491RETX_FLASH.ld" -Wl,-Map="HEPA_UV.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+	arm-none-eabi-g++ -o "HEPA_UV.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"G:\Shared drives\Opentrons\Hardware\1 - Hardware Engineering\1 - NPI Programs\12 - OT3\3 - Electrical\15 - HEPA_UV\Test Code\DC Ballast\STM32G491RETX_FLASH.ld" -Wl,-Map="HEPA_UV.map" -Wl,--gc-sections -static -L"G:\Shared drives\Opentrons\Hardware\1 - Hardware Engineering\1 - NPI Programs\12 - OT3\3 - Electrical\15 - HEPA_UV\Test Code\DC Ballast" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -111,6 +112,10 @@ clean:
 	-$(RM) HEPA_UV.bin HEPA_UV.elf HEPA_UV.hex HEPA_UV.list HEPA_UV.map default.size.stdout
 	-@echo ' '
 
+post-build:
+	arm-none-eabi-objcopy -O ihex HEPA_UV.elf HEPA_UV.hex
+	-@echo ' '
+
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX) $(OBJCOPY_BIN)
 
 fail-specified-linker-script-missing:
@@ -120,6 +125,6 @@ fail-specified-linker-script-missing:
 warn-no-linker-script-specified:
 	@echo 'Warning: No linker script specified. Check the linker settings in the build configuration.'
 
-.PHONY: all clean dependents main-build fail-specified-linker-script-missing warn-no-linker-script-specified
+.PHONY: all clean dependents main-build fail-specified-linker-script-missing warn-no-linker-script-specified post-build
 
 -include ../makefile.targets

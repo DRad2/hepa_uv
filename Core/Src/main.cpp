@@ -122,16 +122,18 @@ uint8_t RxData[8];
 uint8_t TxData[8];
 FDCAN_RxHeaderTypeDef RxHeader;
 FDCAN_TxHeaderTypeDef TxHeader;
+uint8_t EEPROM_CAN_Msg;
 
 /* EEPROM */
 uint8_t dataRead[50];
-uint8_t dataWrite[50];
+uint8_t dataWrite[8];
 uint8_t dataw1[] = "HEPA/UV \r\n";
 uint8_t dataw2[] = "PN: 913-00072 \r\n";
 uint8_t dataw3[] = "SN: 0002 \r\n";
 uint8_t datar1[100];
 uint8_t datar2[100];
 uint8_t datar3[100];
+uint8_t line1[] = "\r\n";
 
 //void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 //	{
@@ -326,19 +328,44 @@ int main(void)
 
   //HAL_GPIO_WritePin(UV_ON_OFF_MCU_GPIO_Port, UV_ON_OFF_MCU_Pin, GPIO_PIN_SET);
 
-
+  EEPROM_CAN_Msg = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
-  {
-	  /* LED Blink */
-//	  	HAL_GPIO_TogglePin(LED_DRIVE_GPIO_Port, LED_DRIVE_Pin);
-//	  	HAL_Delay(100);
+  {	  /* LED Blink */
+	  if (EEPROM_CAN_Msg == 1)
+	  {
+		  for (int i = 0; i < 8; i++)
+		  {
+			  dataWrite[i] = (uint8_t)(rand() % 20);
+		  }
+		  HAL_UART_Transmit(&hlpuart1, dataWrite, strlen((const char*)(dataWrite)), HAL_MAX_DELAY);
+		  HAL_UART_Transmit(&hlpuart1, line1, sizeof(line1), HAL_MAX_DELAY);
+		  /* Write EEPROM */
+		  //EEPROM_Write(0, 0, dataw1, strlen((char *)dataw1));
+		  send_msg(dataWrite, 8);
+		  EEPROM_Write(0, 0, dataWrite, sizeof(dataWrite));
 
+		  //EEPROM_Write(1, 0, dataw2, strlen((char *)dataw2));
+
+		  /* Read EEPROM */
+		  EEPROM_Read(0, 0, datar1, 8);
+		  send_msg(datar1, 8);
+		  //EEPROM_Read(1, 0, datar2, 50);
+
+		  EEPROM_CAN_Msg = 0;
+
+		  /* Erase EEPROM */
+		  for (uint8_t i=0; i<251; i++)
+		  {
+			  EEPROM_PageErase (i);
+		  }
+		  //HAL_Delay(100);
+	  }
 	  /* CAN FD Test */
-	  //test_can_bus();
+	  test_can_bus();
 	  //uint8_t msg[4] = { 0x1, 0x2, 0x3, 0x4 };
 	  //send_msg(msg, 4);
 	  //can_listen();
@@ -359,7 +386,7 @@ int main(void)
 	  	  }
 	  else ready = 0;
 
-	  /* Test UV ON/OFF Pin */
+	   /*Test UV ON/OFF Pin*/
 	  if (ready == 0)
 	  {
 		  if (!HAL_GPIO_ReadPin(UV_NO_GPIO_Port, UV_NO_Pin))
